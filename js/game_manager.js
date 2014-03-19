@@ -59,7 +59,7 @@ GameManager.prototype.addStartTiles = function () {
 // Adds a tile in a random position
 GameManager.prototype.addRandomTile = function () {
   if (this.grid.cellsAvailable()) {
-    var value = Math.random() < 0.9 ? 2 : 4;
+    var value = Math.random() < 0.9 ? 1 : 2;
     var tile = new Tile(this.grid.randomAvailableCell(), value);
 
     this.grid.insertTile(tile);
@@ -127,7 +127,7 @@ GameManager.prototype.move = function (direction) {
 
         // Only one merger per row traversal?
         if (next && next.value === tile.value && !next.mergedFrom) {
-          var merged = new Tile(positions.next, tile.value * 2);
+          var merged = new Tile(positions.next, self.toFaceValue(tile.value * 2));
           merged.mergedFrom = [tile, next];
 
           self.grid.insertTile(merged);
@@ -140,7 +140,7 @@ GameManager.prototype.move = function (direction) {
           self.score += merged.value;
 
           // The mighty 2048 tile
-          if (merged.value === 2048) self.won = true;
+          if (merged.value === 100) self.won = true;
         } else {
           self.moveTile(tile, positions.farthest);
         }
@@ -162,6 +162,23 @@ GameManager.prototype.move = function (direction) {
     this.actuate();
   }
 };
+
+//
+GameManager.prototype.toFaceValue = function (value) {
+  var map = {
+    1: 1,
+    2: 2,
+    4: 5,
+    5: 5,
+    10: 10,
+    20: 20,
+    40: 50,
+    50: 50,
+    100: 100
+  }
+
+  return map[value];
+}
 
 // Get the vector representing the chosen direction
 GameManager.prototype.getVector = function (direction) {
